@@ -1,13 +1,29 @@
-
 # About the project
 
-*Write a short description about the course and add a link to your GitHub repository here. This is an R Markdown (.Rmd) file so you should use R Markdown syntax.*
+This is the project page for the [Introduction to Open Data Science course](https://blogs.helsinki.fi/thinkopen/welcome-open-data-science/) of fall 2022. A link to the repository for this project page is here: [IODS-project (github.com/teemuvh/IODS-project)](https://github.com/teemuvh/IODS-project).
+
+During this course, we get acquainted with R and certain data science methods, such as linear and logistic regression, clustering and classification algorithms, and dimensionality reduction models. During this course, we use the textbooks (1) Vehkalahti, Kimmo & Everitt, Brian S. (2019). *Multivariate Analysis for the Behavioral Sciences* and [(2)](https://argoshare.is.ed.ac.uk/healthyr_book/) Ewen Harrison and Riinu Pius (2021). *R for Health Data Science.*
+
+### Week 1: Start me up!
+
+During the first week, the focus is on getting everything up and running, and getting familiar with the syntax of R before moving to the more challenging topics of the course.
+
+I use Python in my daily work, but so far I like how simple it is to read data into R.
 
 ```{r}
-# This is a so-called "R chunk" where you can write R code.
+# Here, we could load a csv-file to R as follows:
+# data <- read_csv("some_data.csv")
+# And view it as follows:
+# View(data)
+# But since we do not have "some_data" at our disposal,
+# I have just added this as a comment.
 
+# However, we can print the date:
 date()
-
 ```
-The text continues here.
 
+The Harrison & Pius book seems to work well for revising R syntax as well as learning some new tricks already for data transformations (*mutate()*, *summarise()*, *pivot_wider()*, etc.) The difficult part will be remembering these functions...
+
+In the Vehkalahti & Everitt textbook chapters 1 and 2, I liked how the same data were presented in different visualisation formats, which made me think a lot about how I could have presented some of my data before. I will use this information in the future to actually focus a little more on what would be an optimal visualisation method for some given data that I have. Additionally, it was fun to get to already draw some visualisations with R, and again it seems easier compared to Python. In terms of how the material works as a "crash course" to R, I think that having a background in programming helps in getting started with the material, since at least it makes the programming part a bit easier.
+
+It is nice to get to refresh my memory with the statistical methods as well. I have taken an introductory course but it was many years ago, so I have to recap/re-learn many of the topics. Thus, my favorite part of this week has been to actually try to recap these topics in statistics.
