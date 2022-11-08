@@ -2124,7 +2124,13 @@ meldata %>%
 ### 8.14.1 Exercise
 
 ```{r}
-
+library(finalfit)
+meldata %>% 
+  summary_factorlist(dependent = "status.factor", 
+                     explanatory = 
+                       c("sex.factor", "ulcer.factor", "age.factor", "thickness"),
+                     cont = "median"
+  )
 ```
 
 ### 8.14.2 Exercise
