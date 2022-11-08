@@ -2137,7 +2137,29 @@ meldata %>%
 
 ```{r}
 meldata %>%
-  count(ulcer.factor, status.factor) %>%
+  count(age.factor, status.factor) %>%
+  group_by(status.factor) %>%
+  mutate(total = sum(n)) %>%
+  mutate(percentage = round(100*n/total, 1)) %>% 
+  mutate(count_perc = paste0(n, " (", percentage, ")")) %>% 
+  select(-total, -n, -percentage) %>% 
+  spread(status.factor, count_perc)
+```
+
+```{r}
+meldata %>%
+  count(sex.factor, status.factor) %>%
+  group_by(status.factor) %>%
+  mutate(total = sum(n)) %>%
+  mutate(percentage = round(100*n/total, 1)) %>% 
+  mutate(count_perc = paste0(n, " (", percentage, ")")) %>% 
+  select(-total, -n, -percentage) %>% 
+  spread(status.factor, count_perc)
+```
+
+```{r}
+meldata %>%
+  count(sex.factor, age.factor, status.factor) %>%
   group_by(status.factor) %>%
   mutate(total = sum(n)) %>%
   mutate(percentage = round(100*n/total, 1)) %>% 
@@ -2147,6 +2169,16 @@ meldata %>%
 ```
 
 ### 8.14.3 Exercise
+
+```{r}
+library(finalfit)
+meldata %>% 
+  summary_factorlist(dependent   = "status_dss", 
+                     explanatory = c("ulcer.factor",
+                                     "age.factor",
+                                     "sex.factor")
+                     )
+```
 
 (Solutions to these exercises are not included in the book.)
 
