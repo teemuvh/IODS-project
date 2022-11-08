@@ -824,7 +824,7 @@ gbd_full %>%
   summarise(total_per_cause = sum(deaths_millions)) %>%
   group_by(year) %>%
   mutate(total_per_year = sum(total_per_cause)) %>%
-  mutate(percentage = percent(total_per_cause/total_per_year))
+  mutate(percentage = percent(total_per_cause/total_per_year)) %>%
   select(year, cause, percentage) %>%
   pivot_wider(names_from = cause, values_from = percentage)
 ```
@@ -1781,8 +1781,9 @@ fig3 <- paired_data_afr %>%
 
 library(patchwork)
 fig1 / fig2 | fig3
+```
 
-
+```{r}
 ttest <- paired_data_afr %>% 
   t.test(lifeExp ~ year, data = .)
 
@@ -1795,9 +1796,9 @@ ttest$p.value
 diff <- gapdata %>% 
   filter(year == 2007) %>% 
   group_by(continent) %>%
-  do(
+  do (
     t.test(.$lifeExp, mu = 70) %>%
-      tidy()                         
+    tidy()
   )
 
 diff
