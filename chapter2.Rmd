@@ -1,13 +1,83 @@
-# Insert chapter 2 title here
-
-*Describe the work you have done this week and summarize your learning.*
-
-- Describe your work and results clearly. 
-- Assume the reader has an introductory course level understanding of writing and reading R code as well as statistical methods.
-- Assume the reader has no previous knowledge of your data or the more advanced methods you are using.
+# Regression and model validation
 
 ```{r}
 date()
 ```
 
-Here we go again...
+The core idea of regression analysis is to use statistical methods to assess the way in which a change in
+circumstances affect variation in an observed random variable. This section summarises my notes for the
+chapters regarding *Simple linear regression* and *Multiple linear regression*.
+
+There are four basic assumptions in linear regression:
+
+1. The relationship between predictors and outcome is linear
+2. The residuals are independent
+3. The residuals are normally distributed
+4. The residuals have equal variance
+
+### Simple linear regression
+
+Simple linear regression model (intercept $\beta_0$ is not always needed), has only a single explanatory variable ($x$) and a single dependent variable ($y$):
+
+$$
+y_i = \beta_0 + \beta_1 x_i + \epsilon_i
+$$
+
+where $\beta_0$ is the intercept, $\beta_1$ is the slope of the linear relationship between the
+dependent variable and the explanatory variable, and $\epsilon$ is an error term that measures
+the difference between the observed value and the prediction from the model.
+
+The prediction of the model is presented without the loss term as:
+
+$$
+\hat{y} = \beta_0 + \beta_1 x_i
+$$
+
+This equation can then be used for predicting the value of a dependent variable for some explanatory variable.
+
+The variability of the dependent by Regression Means Square (RGMS) and Residual Mean Square (RMS):
+
+$$
+RGMS = \sum_{i=1}^{n} (\hat{y_i} - \overline{y}_i)^2
+$$
+$$
+RMS = \sum_{i=1}^{n} \frac{(y_i - \hat{y_i})^2}{(n-2)}
+$$
+
+
+#### Regression diagnostics
+
+We can assess our model by calculating the difference between an observed value and our prediction:
+
+$$
+\hat{\epsilon} = y - \hat{y} 
+$$
+
+R prints another measure for assessing how close the data are to the fitted line, R-squared:
+
+$$
+R^2 = 1 - \frac{\sum_{i=1}^{n}(y - \hat{y})^2}{\sum_{i=1}^{n}(y - \overline{y})^2}
+$$
+where $\overline{y}$ is the mean value of the sample. R-squared represents the proportion of the dependent variable which is explained by the explanatory variable. If R-squared is 0.0, then the explanatory variable has no effect on the dependent variable. 1.0 indicates that all of the variability is explained by the model (i.e., the regression line fits perfectly). The adjusted R-squared includes a penalty term that lowers the value for less important explanatory variables.
+
+And we should also use visualisation to assess the model; useful plots include:
+
+* Boxplot (or a Q-Q plot) of the residuals
+* Residuals against the corresponding values of the explanatory variables
+* Residuals against the fitted values of the response variable
+
+We can decide whether a linear model is appropriate or we should use a non-linear model.
+
+
+### Multiple linear regression
+
+Here, we have more explanatory variables than in the simple regression (e.g., analysing change in blood pressure
+based on coffee consumption on smokers and non-smokers). Basically, we have multiple parameters that effect the prediction.
+
+$$
+\hat{y} = \beta_0 + \beta_1 x_1 + \beta_2 x_2
+$$
+
+__Confounding__ is a concept referring to a situation where another explanatory variable distorts the relationship between an explanatory variable and the outcome (e.g., smoking could be related to coffee consumption and to blood pressure).
+
+### Assignments

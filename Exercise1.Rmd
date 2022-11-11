@@ -594,7 +594,7 @@ gbd2017 %>%
 gbd2017 %>% 
   group_by(cause, sex) %>% 
   summarise(deaths_per_group = sum(deaths_millions)) %>% 
-  ungroup() %>% 
+  ungroup() %>%  
   mutate(deaths_total = sum(deaths_per_group))
 ```
 
@@ -1455,7 +1455,7 @@ gapdata %>%
   filter(year %in% c(2002, 2007)) %>%
   ggplot(aes(x = lifeExp)) +       # remember aes()
   geom_histogram(bins = 20) +      # histogram with 20 bars
-  facet_grid(year ~ continent)     # optional: add scales="free"                                 
+  facet_grid(year ~ continent)     # optional: add scales="free"                            
 ```
 
 ### 6.4.2 Quantile-quantile (Q-Q) plot

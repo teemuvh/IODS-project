@@ -378,8 +378,8 @@ display: none;
 to Open Data Science - Course Project</a></li>
 <li><a href="#about-the-project" id="toc-about-the-project">About the
 project</a></li>
-<li><a href="#insert-chapter-2-title-here" id="toc-insert-chapter-2-title-here">Insert chapter 2 title
-here</a></li>
+<li><a href="#regression-and-model-validation" id="toc-regression-and-model-validation">Regression and model
+validation</a></li>
 </ul>
 </div>
 
@@ -416,47 +416,131 @@ read data into R.</p>
 
 # However, we can print the date:
 date()</code></pre>
-<pre><code>## [1] &quot;Mon Nov  7 22:17:36 2022&quot;</code></pre>
+<pre><code>## [1] &quot;Fri Nov 11 12:45:51 2022&quot;</code></pre>
 <p>The Harrison &amp; Pius book seems to work well for revising R syntax
 as well as learning some new tricks already for data transformations
-(<em>mutate()</em>, <em>summarise()</em>, <em>pivot_wider()</em>, etc.)
-The difficult part will be remembering these functions…</p>
+(<em>mutate()</em>, <em>summarise()</em>, <em>pivot_wider()</em>,
+<em>factor()</em>, etc.) The difficult part will be remembering when to
+utilise these functions…</p>
 <p>In the Vehkalahti &amp; Everitt textbook chapters 1 and 2, I liked
 how the same data were presented in different visualisation formats,
-which made me think a lot about how I could have presented some of my
-data before. I will use this information in the future to actually focus
-a little more on what would be an optimal visualisation method for some
-given data that I have. Additionally, it was fun to get to already draw
-some visualisations with R, and again it seems easier compared to
-Python. In terms of how the material works as a “crash course” to R, I
-think that having a background in programming helps in getting started
-with the material, since at least it makes the programming part a bit
-easier.</p>
+which made me reflect a lot about how I could have presented some of my
+data before. I will attempt to use this information in the future to
+actually focus a bit more on what could be an optimal visualisation
+method for some given data that I work with. Additionally, it was fun to
+get to draw different visualisations with R, and again it seems simpler
+compared to Python. In terms of how the material works as a “crash
+course” to R, I think that having a background in programming helps in
+getting started with the material, since it makes the programming part a
+bit easier. I believe the material could work if one comes with no
+background in programming, but the learning curve is a bit steeper in
+the beginning.</p>
 <p>It is nice to get to refresh my memory with the statistical methods
-as well. I have taken an introductory course but it was many years ago,
-so I have to recap/re-learn many of the topics. Thus, my favorite part
-of this week has been to actually try to recap these topics in
-statistics.</p>
+as well. I have taken an introductory course to statistics but it was
+many years ago, so I have to recap/re-learn many of the topics. Thus, my
+favourite part of this week has been to actually refreshing my memory on
+these topics in statistics and I expect to learn a lot especially with
+respect to this field. I believe this information will be useful for me
+in the future in my own research.</p>
 <hr />
 </div>
 </div>
-<div id="insert-chapter-2-title-here" class="section level1">
-<h1>Insert chapter 2 title here</h1>
-<p><em>Describe the work you have done this week and summarize your
-learning.</em></p>
-<ul>
-<li>Describe your work and results clearly.</li>
-<li>Assume the reader has an introductory course level understanding of
-writing and reading R code as well as statistical methods.</li>
-<li>Assume the reader has no previous knowledge of your data or the more
-advanced methods you are using.</li>
-</ul>
+<div id="regression-and-model-validation" class="section level1">
+<h1>Regression and model validation</h1>
 <pre class="r"><code>date()</code></pre>
-<pre><code>## [1] &quot;Mon Nov  7 22:17:36 2022&quot;</code></pre>
-<p>Here we go again…</p>
+<pre><code>## [1] &quot;Fri Nov 11 12:45:51 2022&quot;</code></pre>
+<p>The core idea of regression analysis is to use statistical methods to
+assess the way in which a change in circumstances affect variation in an
+observed random variable. This section summarises my notes for the
+chapters regarding <em>Simple linear regression</em> and <em>Multiple
+linear regression</em>.</p>
+<p>There are four basic assumptions in linear regression:</p>
+<ol style="list-style-type: decimal">
+<li>The relationship between predictors and outcome is linear</li>
+<li>The residuals are independent</li>
+<li>The residuals are normally distributed</li>
+<li>The residuals have equal variance</li>
+</ol>
+<div id="simple-linear-regression" class="section level3">
+<h3>Simple linear regression</h3>
+<p>Simple linear regression model (intercept <span class="math inline">\(\beta_0\)</span> is not always needed), has only a
+single explanatory variable (<span class="math inline">\(x\)</span>) and
+a single dependent variable (<span class="math inline">\(y\)</span>):</p>
+<p><span class="math display">\[
+y_i = \beta_0 + \beta_1 x_i + \epsilon_i
+\]</span></p>
+<p>where <span class="math inline">\(\beta_0\)</span> is the intercept,
+<span class="math inline">\(\beta_1\)</span> is the slope of the linear
+relationship between the dependent variable and the explanatory
+variable, and <span class="math inline">\(\epsilon\)</span> is an error
+term that measures the difference between the observed value and the
+prediction from the model.</p>
+<p>The prediction of the model is presented without the loss term
+as:</p>
+<p><span class="math display">\[
+\hat{y} = \beta_0 + \beta_1 x_i
+\]</span></p>
+<p>This equation can then be used for predicting the value of a
+dependent variable for some explanatory variable.</p>
+<p>The variability of the dependent by Regression Means Square (RGMS)
+and Residual Mean Square (RMS):</p>
+<p><span class="math display">\[
+RGMS = \sum_{i=1}^{n} (\hat{y_i} - \overline{y}_i)^2
+\]</span> <span class="math display">\[
+RMS = \sum_{i=1}^{n} \frac{(y_i - \hat{y_i})^2}{(n-2)}
+\]</span></p>
+<div id="regression-diagnostics" class="section level4">
+<h4>Regression diagnostics</h4>
+<p>We can assess our model by calculating the difference between an
+observed value and our prediction:</p>
+<p><span class="math display">\[
+\hat{\epsilon} = y - \hat{y}
+\]</span></p>
+<p>R prints another measure for assessing how close the data are to the
+fitted line, R-squared:</p>
+<p><span class="math display">\[
+R^2 = 1 - \frac{\sum_{i=1}^{n}(y - \hat{y})^2}{\sum_{i=1}^{n}(y -
+\overline{y})^2}
+\]</span> where <span class="math inline">\(\overline{y}\)</span> is the
+mean value of the sample. R-squared represents the proportion of the
+dependent variable which is explained by the explanatory variable. If
+R-squared is 0.0, then the explanatory variable has no effect on the
+dependent variable. 1.0 indicates that all of the variability is
+explained by the model (i.e., the regression line fits perfectly). The
+adjusted R-squared includes a penalty term that lowers the value for
+less important explanatory variables.</p>
+<p>And we should also use visualisation to assess the model; useful
+plots include:</p>
+<ul>
+<li>Boxplot (or a Q-Q plot) of the residuals</li>
+<li>Residuals against the corresponding values of the explanatory
+variables</li>
+<li>Residuals against the fitted values of the response variable</li>
+</ul>
+<p>We can decide whether a linear model is appropriate or we should use
+a non-linear model.</p>
+</div>
+</div>
+<div id="multiple-linear-regression" class="section level3">
+<h3>Multiple linear regression</h3>
+<p>Here, we have more explanatory variables than in the simple
+regression (e.g., analysing change in blood pressure based on coffee
+consumption on smokers and non-smokers). Basically, we have multiple
+parameters that effect the prediction.</p>
+<p><span class="math display">\[
+\hat{y} = \beta_0 + \beta_1 x_1 + \beta_2 x_2
+\]</span></p>
+<p><strong>Confounding</strong> is a concept referring to a situation
+where another explanatory variable distorts the relationship between an
+explanatory variable and the outcome (e.g., smoking could be related to
+coffee consumption and to blood pressure).</p>
+</div>
+<div id="assignments" class="section level3">
+<h3>Assignments</h3>
 <hr />
 <p>(more chapters to be added similarly as we proceed with the
 course!)</p>
+</div>
 </div>
 
 
