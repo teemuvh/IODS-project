@@ -1,5 +1,7 @@
 # Regression and model validation
 
+*Jump straight to the [assignments](#assignment).*
+
 ```{r}
 date()
 ```
@@ -80,4 +82,9 @@ $$
 
 __Confounding__ is a concept referring to a situation where another explanatory variable distorts the relationship between an explanatory variable and the outcome (e.g., smoking could be related to coffee consumption and to blood pressure).
 
-### Assignments
+### Assignments {#assignment}
+
+#### 1. Data wrangling
+
+
+#### 2. Regression analysis
