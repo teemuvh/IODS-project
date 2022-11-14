@@ -444,7 +444,7 @@ object name where the plot is saved
 library(ggplot2)
 
 # initialize plot with data and aesthetic mapping
-p1 <- ggplot(learning2014, aes(x = attitude, y = points))
+p1 <- ggplot(learning2014, aes(x = attitude, y = points, col=gender))
 
 # define the visualization type (points)
 p2 <- p1 + geom_point()
@@ -456,11 +456,10 @@ p2
 p3 <- p2 + geom_smooth(method = "lm")
 
 # add a main title
-p4 <- "change me!"
+p4 <- p3 + ggtitle("Student's attitude versus exam points")
 
 # draw the plot!
-
-
+p4
 ```
 
 ## 2.8 Exploring a data frame
@@ -514,19 +513,17 @@ by simply typing it's name: just like printing R objects.
 
 # draw a scatter plot matrix of the variables in learning2014.
 # [-1] excludes the first column (gender)
-pairs(learning2014[-1])
+pairs(learning2014[-1], col=learning2014$gender)
 
 # access the GGally and ggplot2 libraries
 library(GGally)
 library(ggplot2)
 
 # create a more advanced plot matrix with ggpairs()
-p <- ggpairs(learning2014, mapping = aes(), lower = list(combo = wrap("facethist", bins = 20)))
+p <- ggpairs(learning2014, mapping = aes(col=gender, alpha=0.3), lower = list(combo = wrap("facethist", bins = 20)))
 
 # draw the plot
-
-
-
+p
 ```
 
 ## 2.9 Simple regression
@@ -551,8 +548,10 @@ summary of the model.
 
 # Click the green arrow ("Run Current Chunk") in the upper-right corner of this chunk. This will initialize the R objects needed in the exercise. Then move to Instructions of the exercise to start working.
 
-learning2014 <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/Helsinki-Open-Data-Science/master/datasets/learning2014.txt",
-                            sep = ",", header = T)
+# learning2014 <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/Helsinki-Open-Data-Science/master/datasets/learning2014.txt",
+#                             sep = ",", header = T)
+
+learning2014 <- read.table("data/learning2014.csv", sep=",", header=T)
 ```
 
 ### Instructions
@@ -577,10 +576,10 @@ library(ggplot2)
 qplot(attitude, points, data = learning2014) + geom_smooth(method = "lm")
 
 # fit a linear model
-my_model <- lm(points ~ 1, data = learning2014)
+my_model <- lm(points ~ attitude, data = learning2014)
 
 # print out a summary of the model
-
+summary(my_model)
 
 ```
 
@@ -636,7 +635,8 @@ ggpairs(learning2014, lower = list(combo = wrap("facethist", bins = 20)))
 my_model2 <- lm(points ~ attitude + stra, data = learning2014)
 
 # print out a summary of the model
-
+my_model2 %>%
+  summary()
 
 ```
 
@@ -694,11 +694,15 @@ example: `c(1,2,3)`.
 # learning2014 is available
 
 # create a regression model with multiple explanatory variables
-my_model2 <- lm(points ~ attitude + stra, data = learning2014)
+my_model2 <- lm(points ~ attitude, data = learning2014)
 
 # draw diagnostic plots using the plot() function. Choose the plots 1, 2 and 5
 
+```
 
+```{r}
+library(ggfortify)
+autoplot(my_model2)
 ```
 
 ## 2.12 Making predictions
