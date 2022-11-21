@@ -1,3 +1,9 @@
+---
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
 # Regression and model validation
 
 *Jump straight to the [assignments](#assignment).*
@@ -6,28 +12,33 @@
 date()
 ```
 
-The core idea of regression analysis is to use statistical methods to assess the way in which a change in
-circumstances affect variation in an observed random variable. This section summarises my notes for the
-chapters regarding *Simple linear regression* and *Multiple linear regression*.
+The core idea of regression analysis is to use statistical methods to
+assess the way in which a change in circumstances affect variation in an
+observed random variable. This section summarises my notes for the
+chapters regarding *Simple linear regression* and *Multiple linear
+regression*.
 
 There are four basic assumptions in linear regression:
 
-1. The relationship between predictors and outcome is linear
-2. The residuals are independent
-3. The residuals are normally distributed
-4. The residuals have equal variance
+1.  The relationship between predictors and outcome is linear
+2.  The residuals are independent
+3.  The residuals are normally distributed
+4.  The residuals have equal variance
 
 ### Simple linear regression
 
-Simple linear regression model (intercept $\beta_0$ is not always needed), has only a single explanatory variable ($x$) and a single dependent variable ($y$):
+Simple linear regression model (intercept $\beta_0$ is not always
+needed), has only a single explanatory variable ($x$) and a single
+dependent variable ($y$):
 
 $$
 y_i = \beta_0 + \beta_1 x_i + \epsilon_i
 $$
 
-where $\beta_0$ is the intercept, $\beta_1$ is the slope of the linear relationship between the
-dependent variable and the explanatory variable, and $\epsilon$ is an error term that measures
-the difference between the observed value and the prediction from the model.
+where $\beta_0$ is the intercept, $\beta_1$ is the slope of the linear
+relationship between the dependent variable and the explanatory
+variable, and $\epsilon$ is an error term that measures the difference
+between the observed value and the prediction from the model.
 
 The prediction of the model is presented without the loss term as:
 
@@ -35,64 +46,81 @@ $$
 \hat{y} = \beta_0 + \beta_1 x_i
 $$
 
-This equation can then be used for predicting the value of a dependent variable for some explanatory variable.
+This equation can then be used for predicting the value of a dependent
+variable for some explanatory variable.
 
-The variability of the dependent by Regression Means Square (RGMS) and Residual Mean Square (RMS):
+The variability of the dependent by Regression Means Square (RGMS) and
+Residual Mean Square (RMS):
 
 $$
 RGMS = \sum_{i=1}^{n} (\hat{y_i} - \overline{y}_i)^2
-$$
-$$
+$$ $$
 RMS = \sum_{i=1}^{n} \frac{(y_i - \hat{y_i})^2}{(n-2)}
 $$
 
-
 #### Regression diagnostics
 
-We can assess our model by calculating the difference between an observed value and our prediction:
+We can assess our model by calculating the difference between an
+observed value and our prediction:
 
 $$
 \hat{\epsilon} = y - \hat{y} 
 $$
 
-R prints another measure for assessing how close the data are to the fitted line, R-squared:
+R prints another measure for assessing how close the data are to the
+fitted line, R-squared:
 
 $$
 R^2 = 1 - \frac{\sum_{i=1}^{n}(y - \hat{y})^2}{\sum_{i=1}^{n}(y - \overline{y})^2}
-$$
-where $\overline{y}$ is the mean value of the sample. R-squared represents the proportion of the dependent variable which is explained by the explanatory variable. If R-squared is 0.0, then the explanatory variable has no effect on the dependent variable. 1.0 indicates that all of the variability is explained by the model (i.e., the regression line fits perfectly). The adjusted R-squared includes a penalty term that lowers the value for less important explanatory variables.
+$$ where $\overline{y}$ is the mean value of the sample. R-squared
+represents the proportion of the dependent variable which is explained
+by the explanatory variable. If R-squared is 0.0, then the explanatory
+variable has no effect on the dependent variable. 1.0 indicates that all
+of the variability is explained by the model (i.e., the regression line
+fits perfectly). The adjusted R-squared includes a penalty term that
+lowers the value for less important explanatory variables.
 
-And we should also use visualisation to assess the model; useful plots include:
+And we should also use visualisation to assess the model; useful plots
+include:
 
-* Boxplot (or a Q-Q plot) of the residuals
-* Residuals against the corresponding values of the explanatory variables
-* Residuals against the fitted values of the response variable
+-   Boxplot (or a Q-Q plot) of the residuals
+-   Residuals against the corresponding values of the explanatory
+    variables
+-   Residuals against the fitted values of the response variable
 
-We can decide whether a linear model is appropriate or we should use a non-linear model.
-
+We can decide whether a linear model is appropriate or we should use a
+non-linear model.
 
 ### Multiple linear regression
 
-Here, we have more explanatory variables than in the simple regression (e.g., analysing change in blood pressure
-based on coffee consumption on smokers and non-smokers). Basically, we have multiple parameters that effect the prediction.
+Here, we have more explanatory variables than in the simple regression
+(e.g., analysing change in blood pressure based on coffee consumption on
+smokers and non-smokers). Basically, we have multiple parameters that
+effect the prediction.
 
 $$
 \hat{y} = \beta_0 + \beta_1 x_1 + \beta_2 x_2
 $$
 
-__Confounding__ is a concept referring to a situation where another explanatory variable distorts the relationship between an explanatory variable and the outcome (e.g., smoking could be related to coffee consumption and to blood pressure).
+**Confounding** is a concept referring to a situation where another
+explanatory variable distorts the relationship between an explanatory
+variable and the outcome (e.g., smoking could be related to coffee
+consumption and to blood pressure).
 
 ### Assignments {#assignment}
 
 #### 1. Data wrangling
 
-Done and wrangled data in my GitHub [repo](https://github.com/teemuvh/IODS-project/tree/master/data).
+Done and wrangled data in my GitHub
+[repo](https://github.com/teemuvh/IODS-project/tree/master/data).
 
 #### 2. Regression analysis
 
-__Task 1:__
+**Task 1:**
 
-First, we need to read the data we created in the data wrangling exercise. The data is stored in the __data__ dictionary. Then we quickly check the structure and the dimensions of the data.
+First, we need to read the data we created in the data wrangling
+exercise. The data is stored in the **data** dictionary. Then we quickly
+check the structure and the dimensions of the data.
 
 ```{r}
 learning2014 <- read.table("data/learning2014.csv", sep=",", header=T)
@@ -100,11 +128,27 @@ learning2014 <- read.table("data/learning2014.csv", sep=",", header=T)
 dim(learning2014)
 str(learning2014)
 ```
-`dim()` outputs the dimensionality of the data ([166, 7]), whereas `str()` outputs, in addition to the number of observations and variables (i.e., dimensions), a little more information about the data. `str()` also outputs a few examples of the observations in the seven variables.
 
-The variables in the data are *gender*, *age*, *attitude*, *deep*, *stra*, *surf*, and *points*. I think that in general, this data is about students' attitudes towards studying statistics and how they feel about learning the topics on some statistics course. The different variables indicate a student's gender, the age of the student, student's attitude towards statistics (averaged over 10 answers to questions on a Likert scale). From the [link](http://www.helsinki.fi/~kvehkala/JYTmooc/JYTOPKYS3-meta.txt) given in the material, I interpret that Deep, strategic (stra), and surface (surf) indicate learning methods based on some clusters of questions related to these methods. Points indicates the points a student got from the course exam. In the dataset considered in this exercise, we have the previous variables for 166 students.
+`dim()` outputs the dimensionality of the data ([166, 7]), whereas
+`str()` outputs, in addition to the number of observations and variables
+(i.e., dimensions), a little more information about the data. `str()`
+also outputs a few examples of the observations in the seven variables.
 
-__Task 2:__
+The variables in the data are *gender*, *age*, *attitude*, *deep*,
+*stra*, *surf*, and *points*. I think that in general, this data is
+about students' attitudes towards studying statistics and how they feel
+about learning the topics on some statistics course. The different
+variables indicate a student's gender, the age of the student, student's
+attitude towards statistics (averaged over 10 answers to questions on a
+Likert scale). From the
+[link](http://www.helsinki.fi/~kvehkala/JYTmooc/JYTOPKYS3-meta.txt)
+given in the material, I interpret that Deep, strategic (stra), and
+surface (surf) indicate learning methods based on some clusters of
+questions related to these methods. Points indicates the points a
+student got from the course exam. In the dataset considered in this
+exercise, we have the previous variables for 166 students.
+
+**Task 2:**
 
 ```{r}
 # access the GGally and ggplot2 libraries
@@ -118,38 +162,59 @@ p <- ggpairs(learning2014, mapping = aes(col=gender, alpha=0.3), lower = list(co
 p
 ```
 
+I summarised the data to one scatterplot matrix From this visualisation
+above, we can observe different dimensions and how they interact.
+Scatterplots are drawn on the left side of the diagonal, the diagonal
+depicts the variable distribution, whereas the right side of the matrix
+displays the Pearson correlation.
 
-I summarised the data to one scatterplot matrix From this visualisation above, we can observe different dimensions and how they interact. Scatterplots are drawn on the left side of the diagonal, the diagonal depicts the variable distribution, whereas the right side of the matrix displays the Pearson correlation.
+First, we see that the sample has quite a lot more female students than
+males. Most of the students in both group were around the age of 20-25.
+Male students seem to have had slightly more positive attitude towards
+statistics, having most of the mass in the middle of the Likert scale
+(around 3.5), but also more answers in the higher end of the scale
+compared to female students. Male students seem to have had a bit
+stronger tendency towards *deep* learning strategy, whereas female
+students seem to have been more prone to the *strategic* dimension.
+Female students also seem to have been more prone to this *surface*
+dimension. Points in the exam seem quite similarly distributed between
+the groups. However, it seems that more male students have acquired the
+highest points.
 
-First, we see that the sample has quite a lot more female students than males. Most of the students in both group were around the age of 20-25. Male students seem to have had slightly more positive attitude towards statistics, having most of the mass in the middle of the Likert scale (around 3.5), but also more answers in the higher end of the scale compared to female students. Male students seem to have had a bit stronger tendency towards *deep* learning strategy, whereas female students seem to have been more prone to the *strategic* dimension. Female students also seem to have been more prone to this *surface* dimension. Points in the exam seem quite similarly distributed between the groups. However, it seems that more male students have acquired the highest points.
+Most of the variables seem not to be correlated based on the Pearson
+correlation coefficient. However, a few of them are. Quite
+understandably, attitude seems to correlate with the points acquired.
 
-Most of the variables seem not to be correlated based on the Pearson correlation coefficient. However, a few of them are. Quite understandably, attitude seems to correlate with the points acquired.
+**Task 3:**
 
-__Task 3:__
+Now, we look at multivariable regression. Let the first explanatory
+variable be **attitude**, the second variable can be **stra**, and the
+third one **surf**. The decided variables are based on their correlation
+indicated by the Pearson correlation coefficient in the visualisation
+above.
 
-Now, we look at multivariable regression.
-Let the first explanatory variable be __attitude__, the second variable can be __stra__, and the third one __surf__. The decided variables are based on their correlation indicated by the Pearson correlation coefficient in the visualisation above.
-
-We can first visualise all of the variables relationship with the exam scores independently:
+We can first visualise all of the variables relationship with the exam
+scores independently:
 
 ```{r}
 library(ggplot2)
 qplot(attitude, points, data = learning2014) + geom_smooth(method = "lm")
 ```
 
-
 ```{r}
 library(ggplot2)
 qplot(stra, points, data = learning2014) + geom_smooth(method = "lm")
 ```
-
 
 ```{r}
 library(ggplot2)
 qplot(surf, points, data = learning2014) + geom_smooth(method = "lm")
 ```
 
-Based on the three visualisations, it seems that both __attitude__ and __stra__ have a positive correlation with the exam results. __Surf__, unsurprisingly, seems to have a slightly negative correlation. Next, we fit a multivariable regression model to the given explanatory variables.
+Based on the three visualisations, it seems that both **attitude** and
+**stra** have a positive correlation with the exam results. **Surf**,
+unsurprisingly, seems to have a slightly negative correlation. Next, we
+fit a multivariable regression model to the given explanatory variables.
 
 ```{r}
 # create a regression model with multiple explanatory variables
@@ -160,37 +225,65 @@ multivariable_model %>%
   summary()
 ```
 
-The summary includes residuals in five points (min, first quartile, median, third quartile, and max). If the model fits perfectly to the data, the distribution between the residuals should be symmetrical. 
+The summary includes residuals in five points (min, first quartile,
+median, third quartile, and max). If the model fits perfectly to the
+data, the distribution between the residuals should be symmetrical.
 
-Next, there is the coefficients block with values for estimate, Std. error, t-value, and p-value. 
+Next, there is the coefficients block with values for estimate, Std.
+error, t-value, and p-value.
 
-The estimate column indicates that a change of one point in attitude results in a change of approximately 3.4 points in the exam scores. With respect to stra and surf, the correlation is one to 0.9 and one to -0.6 respectively. 
+The estimate column indicates that a change of one point in attitude
+results in a change of approximately 3.4 points in the exam scores. With
+respect to stra and surf, the correlation is one to 0.9 and one to -0.6
+respectively.
 
-The Std. error indicates how far the estimates are from the true average values of the dependent variables.
+The Std. error indicates how far the estimates are from the true average
+values of the dependent variables.
 
-T-value indicates the distance of our coefficient estimates from 0 as standard deviations. This value can be positive or negative, but it should be far from 0. A large difference to 0 would indicate relationship between the given variables (e.g., attitude and points), whereas 0 (or near to 0) means that there is no relationship.
+T-value indicates the distance of our coefficient estimates from 0 as
+standard deviations. This value can be positive or negative, but it
+should be far from 0. A large difference to 0 would indicate
+relationship between the given variables (e.g., attitude and points),
+whereas 0 (or near to 0) means that there is no relationship.
 
-Finally, we have the probability of getting any value that is equal or larger than t. This value should be as small as possible for us to be able to confidently reject the null hypothesis.
+Finally, we have the probability of getting any value that is equal or
+larger than t. This value should be as small as possible for us to be
+able to confidently reject the null hypothesis.
 
-The significant codes are probably in the output for a quicker read of the results.
+The significant codes are probably in the output for a quicker read of
+the results.
 
-Lastly, there are the residual standard error (RSE), multiple and adjusted R-squared, and F-statistics. The RSE measures how well the model fits the data based on the residuals ($y-\hat{y}$). In practice, it is the square root of the mean squared error (please, correct me if I am wrong):
+Lastly, there are the residual standard error (RSE), multiple and
+adjusted R-squared, and F-statistics. The RSE measures how well the
+model fits the data based on the residuals ($y-\hat{y}$). In practice,
+it is the square root of the mean squared error (please, correct me if I
+am wrong):
 
 $$
 RSE = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y_i})^2}
-$$
-R-squared ($R^2$) is another value to assess how well the model fits the data. In practice, R-squared represents the proportion of the dependent variable which is explained by the explanatory variable. If R-squared is 0.0, then the explanatory variable has no effect on the dependent variable. If the result is 1.0, all of the variability is explained by the model (i.e., the regression line fits perfectly). The adjusted R-squared includes a penalty term that lowers the value for less important explanatory variables.
+$$ R-squared ($R^2$) is another value to assess how well the model fits
+the data. In practice, R-squared represents the proportion of the
+dependent variable which is explained by the explanatory variable. If
+R-squared is 0.0, then the explanatory variable has no effect on the
+dependent variable. If the result is 1.0, all of the variability is
+explained by the model (i.e., the regression line fits perfectly). The
+adjusted R-squared includes a penalty term that lowers the value for
+less important explanatory variables.
 
 R-squared is calculated as:
 
 $$
 R^2 = 1 - \frac{\sum_{i=1}^{n}(y - \hat{y})^2}{\sum_{i=1}^{n}(y - \overline{y})^2}
-$$
-where $\overline{y}$ is the mean value of the sample.
+$$ where $\overline{y}$ is the mean value of the sample.
 
-F-test compares the means of the groups and indicates whether at least one variable is statistically significant.
+F-test compares the means of the groups and indicates whether at least
+one variable is statistically significant.
 
-The summary of the model indicates that only __attitude__ has a significant correlation with the exam points, whereas the correlations between __stra__ and points and __surf__ and points are not statistically significant. R-squared seems low to me. Perhaps this is because we only have so little data points to fit the model to?
+The summary of the model indicates that only **attitude** has a
+significant correlation with the exam points, whereas the correlations
+between **stra** and points and **surf** and points are not
+statistically significant. R-squared seems low to me. Perhaps this is
+because we only have so little data points to fit the model to?
 
 Next, we remove the non-significant variables and fit the model again.
 
@@ -205,20 +298,25 @@ attitude_model %>%
 
 Now, we only have the significant variable in the model.
 
-__Task 4:__
+**Task 4:**
 
-Most of this task was done in the earlier task, but in short, a change of one point (on the Likert scale) in attitude results in a change of 3.5 points in the exam scores. R-squared was also explained above.
+Most of this task was done in the earlier task, but in short, a change
+of one point (on the Likert scale) in attitude results in a change of
+3.5 points in the exam scores. R-squared was also explained above.
 
-__Task 5:__
+**Task 5:**
 
-Finally, draw some visualisations of the residuals. First, I print the regression line of the attitude variable again, just to help in analysis:
+Finally, draw some visualisations of the residuals. First, I print the
+regression line of the attitude variable again, just to help in
+analysis:
 
 ```{r}
 library(ggplot2)
 qplot(attitude, points, data = learning2014) + geom_smooth(method = "lm")
 ```
 
-Next, I start outputting the different residual plots, beginning with *Residuals vs Fitted*.
+Next, I start outputting the different residual plots, beginning with
+*Residuals vs Fitted*.
 
 ```{r}
 # plot all plots:
@@ -226,16 +324,31 @@ Next, I start outputting the different residual plots, beginning with *Residuals
 # but for the sake of the notebook, I plot these one by one
 plot(attitude_model, which=1)
 ```
-On the plot above, the residuals (y-axis) are plotted with respect to the estimated responses (x-axis). The residual line does not correspond exactly to the regression line. I think (but please correct me if I am wrong) what we can read from the line is that the variance is larger in the end of the data, meaning that the model might not have fitted well. This is likely an issue of small data size in this case.
+
+On the plot above, the residuals (y-axis) are plotted with respect to
+the estimated responses (x-axis). The residual line does not correspond
+exactly to the regression line. I think (but please correct me if I am
+wrong) what we can read from the line is that the variance is larger in
+the end of the data, meaning that the model might not have fitted well.
+This is likely an issue of small data size in this case.
 
 ```{r}
 plot(attitude_model, which=2)
 ```
 
-The Q-Q plot shows that the data is not normally distributed, but skews in both ends of the data points. What I read from this is that there might be values in both ends that are very far from the expected mean if the data were normally distributed.
+The Q-Q plot shows that the data is not normally distributed, but skews
+in both ends of the data points. What I read from this is that there
+might be values in both ends that are very far from the expected mean if
+the data were normally distributed.
 
 ```{r}
 plot(attitude_model, which=5)
 ```
 
-Residuals vs Leverage shows how important different data points are to the regression model. The spread of the data points should not change as a function of leverage, but in the right end of the line it seems to change. Perhaps this is again an issue with small data size? There are no data points outside of Cook's distance, so there are no data points whose deletion from the data would have a high influence on the regression model.
+Residuals vs Leverage shows how important different data points are to
+the regression model. The spread of the data points should not change as
+a function of leverage, but in the right end of the line it seems to
+change. Perhaps this is again an issue with small data size? There are
+no data points outside of Cook's distance, so there are no data points
+whose deletion from the data would have a high influence on the
+regression model.
