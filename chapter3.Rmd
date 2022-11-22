@@ -1,0 +1,210 @@
+---
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+# Logistic regression
+
+*Jump straight to the [assignments](#assignment_log_regression).*
+
+```{r}
+date()
+```
+
+This part of the course will focus on Logistic Regression, which is a type of models where the output is categorical. For example, if we want to predict whether an email is spam or not, or whether a tumor is malign or benign, we could use a logistic regression model. Similarly, instead of only two, we could have multiple possible labels.
+
+### Some notes about Logistic Regression
+
+Linear regression models the population mean of the response variable directly as a linear function of the explanatory variables:
+
+$$
+E(y|x_1, x_2, ..., x_n) = \beta_0 + \beta_1x_1 + \beta_2x_2 + ... + \beta_nx_n
+$$
+
+With classification of categorical values, this is not a suitable way, but we need to output something that we can interpret as probabilities for the different outcomes. The issue with linear regression models is that the output can be any real number between $-\infty$ and $\infty$. Thus, we need a *link* function, which here is the logarithm of the odds: $log(\frac{\pi}{1-\pi})$. Logistic regression then takes the form of:
+
+$$
+logit (\pi) = log(\frac{\pi}{1-\pi}) = \beta_0 + \beta_1x_1 + \beta_2x_2 + ... + \beta_nx_n
+$$
+
+Logistic regression function rearraged is:
+
+$$
+\pi = \frac{ \exp (\beta_0 + \beta_1x_1 + \beta_2x_2 + ... + \beta_nx_n)}{1- \exp (\beta_0 + \beta_1x_1 + \beta_2x_2 + ... + \beta_nx_n)}
+$$
+Observed variable $y$ is represented as:
+
+$$
+y = \pi(x_1, x_2, ..., x_n) + \epsilon
+$$
+, where $\epsilon = 1 - \pi(x_1, x_2, ..., x_n)$, with probability $\pi(x_1, x_2, ..., x_n)$ if $y = 1$. Otherwise, if $y = 0$, $\epsilon = \pi(x_1, x_2, ..., x_n)$, with probability $1 - \pi(x_1, x_2, ..., x_n)$.
+
+
+### Assignments {#assignment_log_regression}
+
+#### Data wrangling
+
+Data for the following analysis exercise [here](https://github.com/teemuvh/IODS-project/blob/master/data/create_alc.R).
+
+#### Logistic regression
+
+In this assignment, we will apply logistic regression to the alcohol consumption data created in the previous exercise. The original data is presented in Cortez & Silva, (2008).^[P. Cortez and A. Silva. Using Data Mining to Predict Secondary School Student Performance. In A. Brito and J. Teixeira Eds., Proceedings of 5th FUture BUsiness TEChnology Conference (FUBUTEC 2008) pp. 5-12, Porto, Portugal, April, 2008, EUROSIS, ISBN 978-9077381-39-7.]
+
+```{r}
+library(readr)
+alc <- read_csv("data/alc.csv", show_col_types = FALSE)
+library(dplyr)
+```
+
+```{r}
+colnames(alc)
+```
+
+
+The wrangled data consists of 370 observations and 33 original variables. In practice, the observations are Portuguese secondary school students attending courses in mathematics and in Portuguese. The variables include student demographics, social and school related features, and grades. We have added another two variables, `alc_use` and `high_use`, where `alc_use` averages the weekday and weekend alcohol consumption, while `high_use` is a truth value indicating whether the students' alcohol consumption is low (`FALSE`) or high (`TRUE`).
+
+The goal of this exercise is to attempt at explaining the relationship between different explanatory variables to alcohol consumption. As there are so many options, we define the number of variables to be explored to four. There are many variables that I believe can explain alcohol consumption, but for this experiment, I will choose variables related to freetime activity. My hypothesis is that the more a student has 'other' activities (`internet`, `romantic`, `activities`) the less they have `freetime` and the less they consume alcohol.
+
+First, we might need to change the string-formatted answers to integers.
+
+```{r}
+library(tidyverse)
+library(finalfit)
+
+alc <- alc %>%
+  mutate(internet.int = factor(internet) %>%         
+           fct_recode("0" = "no",
+                      "1" = "yes"),
+
+         romantic.int = factor(romantic) %>% 
+           fct_recode("0" = "no",
+                      "1"  = "yes"),
+         
+         activities.int = factor(activities) %>% 
+           fct_recode("0" = "no",
+                      "1"  = "yes"),
+  )
+```
+
+
+Next, let's visualise the variables with respect to alcohol consumption.
+
+
+```{r}
+# access the tidyverse packages dplyr and ggplot2
+library(dplyr); library(ggplot2)
+
+g1 <- ggplot(data = alc, aes(x = high_use, fill = romantic.int))
+g1 + geom_bar() + facet_wrap("romantic")
+
+g2 <- ggplot(data = alc, aes(x = high_use, fill = internet.int))
+g2 + geom_bar() + facet_wrap("internet")
+
+g3 <- ggplot(data = alc, aes(x = high_use, fill = activities.int))
+g3 + geom_bar() + facet_wrap("activities")
+
+g4 <- ggplot(data = alc, aes(x = high_use, fill = freetime))
+g4 + geom_bar() + facet_wrap("freetime")
+```
+
+
+Based on the barplots, it seems that students who are in a romantic relationship are less prone to high usage of alcohol. Internet, however, does not show a similar effect. Rather, it seems that students who have internet connection at home seem to consume more alcohol. This is probably explained by the fact that not many households are without internet connection.
+
+
+```{r}
+library(dplyr)
+alc %>% 
+  group_by(internet.int) %>%
+  summarise(percent = 100 * n() / nrow(alc))
+```
+
+
+As it seems, there are approximately 85% of households with internet connection.
+
+Extracurricular activities seem to not have a large effect on alcohol consumption, but perhaps students who have no extracurricular activities might be slightly more prone to high alcohol consumption.
+
+Lastly, it seems that the more free time students have, the more the smaller the gap between high and low alcohol consumption.
+
+Next, I use logistic regression to analyse the variables further, and see whether my hypothesis really holds.
+
+```{r}
+m <- glm(high_use ~ romantic.int + internet.int + activities.int + freetime, data = alc, family = "binomial")
+
+summary(m)
+```
+
+
+Based on logistic regression, it seems that only `freetime` is statistically significant to high alcohol consumption.
+
+```{r}
+library(broom)
+m %>% 
+  tidy(conf.int = TRUE, exp = TRUE)
+```
+
+
+Above, we have the coefficients (*estimate*) and the confidence intervals (*conf.low* and *conf.high*) for the different variables. For the only statistically significant explanatory variable is the amount of free time, I mostly focus on that. The coefficient, approx. 1.48, indicates that moving one step in freetime, 0 (very low) to 5 (very high), multiplies the odds of high alcohol consumption by 1.48. Or we can state that increase in freetime by one point increases the odds of high alcohol consumption by 48%. The negative coefficients (<1 in the tidy output) indicate that these explanatory variables (romantic relationship and extracurricular activities) have a decreasing effect on the risk of high alcohol consumption. I.e., if one is in a romantic relationship or has extracurricular activities, they are less prone for high alcohol consumption.
+
+```{r}
+m <- glm(high_use ~ freetime, data = alc, family = "binomial")
+alc <- mutate(alc, probability = predict(m, type = "response"))
+alc <- mutate(alc, prediction = probability > 0.5)
+
+table(high_use = alc$high_use, prediction = alc$prediction)
+```
+
+
+It seems that the model fitted only on `freetime` always predicts `FALSE`. We can calculate our model's accuracy from the confusion matrix by:
+
+$$
+acc = \frac{(TP + TN)}{(P + N)}
+$$
+
+For our model, that would result in $acc = \frac{259}{370} = 0.7$
+
+
+```{r}
+# define a loss function (mean prediction error)
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 0.5
+  mean(n_wrong)
+}
+
+# call loss_func to compute the average number of wrong predictions in the (training) data
+loss_func(class = alc$high_use, prob = alc$probability)
+```
+
+Our loss function returns a loss of 0.3, indicating that, on average, we predict the wrong label by a probability of 30%.
+
+
+```{r}
+library(dplyr)
+alc %>% 
+  group_by(high_use) %>%
+  summarise(percent = 100 * n() / nrow(alc))
+```
+
+The data consists of 70% of `FALSE` labels. Thus, if we would always guess the majority class, like our model actually does, our baseline accuracy would be 0.7. Thus, any useful model should be able to obtain accuracy higher than that.
+
+
+__Bonus exercise 1__
+
+```{r}
+m2 <- glm(high_use ~ sex + failures + absences + famrel + goout + health, data = alc, family = "binomial")
+alc <- mutate(alc, probability = predict(m2, type = "response"))
+alc <- mutate(alc, prediction = probability > 0.5)
+```
+
+
+```{r}
+# K-fold cross-validation
+library(boot)
+cv <- cv.glm(data = alc, cost = loss_func, glmfit = m2, K = 10)
+
+# average number of wrong predictions in the cross validation
+cv$delta[1]
+```
+
+I can get loss of approximately 0.2 in cross-validation by adding `sex`, `failures`, `absences`, `famrel`, `goout`, and `health` to the model features.
+
