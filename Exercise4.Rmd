@@ -248,14 +248,14 @@ comma in a vector - Remember that strings need the quotes around them -
 # Boston and boston_scaled are available
 
 # summary of the scaled crime rate
-summary(boston_scaled$crime)
+summary(boston_scaled$crim)
 
 # create a quantile vector of crim and print it
-bins <- quantile(boston_scaled$crime)
+bins <- quantile(boston_scaled$crim)
 bins
 
 # create a categorical variable 'crime'
-crime <- cut(boston_scaled$crime,
+crime <- cut(boston_scaled$crim,
              breaks = bins,
              include.lowest = TRUE,
              label = c("low", "med_low", "med_high", "high"))
@@ -264,7 +264,7 @@ crime <- cut(boston_scaled$crime,
 table(crime)
 
 # remove original crim from the dataset
-boston_scaled <- dplyr::select(boston_scaled, -crime)
+boston_scaled <- dplyr::select(boston_scaled, -crim)
 
 # add the new categorical value to scaled data
 boston_scaled <- data.frame(boston_scaled, crime)
@@ -295,6 +295,7 @@ library(dplyr)
 library(MASS)
 boston_scaled <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/Helsinki-Open-Data-Science/master/datasets/boston_scaled.txt",
                             sep=",", header = T)
+
 ```
 
 ### Instructions
@@ -367,6 +368,7 @@ Stack Overflow message thread.
 library(MASS)
 boston_scaled <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/Helsinki-Open-Data-Science/master/datasets/boston_scaled.txt",
                             sep=",", header = T)
+
 ind <- sample(nrow(boston_scaled),  size = nrow(boston_scaled) * 0.8)
 train <- boston_scaled[ind,]
 test <- boston_scaled[-ind,]
@@ -426,7 +428,8 @@ lda.arrows <- function(x, myscale = 1, arrow_heads = 0.1, color = "red", tex = 0
 classes <- as.numeric(crime)
 
 # plot the lda results
-plot(lda.fit, dimen = 2)
+classes <- as.numeric(train$crime)
+plot(lda.fit, dimen = 2, col = classes, pch = classes)
 lda.arrows(lda.fit, myscale = 2)
 
 ```
