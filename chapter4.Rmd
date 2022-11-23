@@ -1,0 +1,17 @@
+---
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+# Clustering and classification
+
+*Jump straight to the [assignments](#assignment_k-means).*
+
+```{r}
+date()
+```
+
+This chapter focuses on a set of clustering methods, designed for visualizing and exploring statistical data. In general, we want to train a model that can position data points to different clusters (or groups) based on their characteristics. After the model is trained, it can be used for unseen data to classify that data to the learnt clusters. The most popular of these methods is __k-means clustering__.
+
+### Assignments {#assignment_k-means}

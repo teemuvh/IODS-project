@@ -382,6 +382,8 @@ project</a></li>
 validation</a></li>
 <li><a href="#logistic-regression" id="toc-logistic-regression">Logistic
 regression</a></li>
+<li><a href="#clustering-and-classification" id="toc-clustering-and-classification">Clustering and
+classification</a></li>
 </ul>
 </div>
 
@@ -418,7 +420,7 @@ read data into R.</p>
 
 # However, we can print the date:
 date()</code></pre>
-<pre><code>## [1] &quot;Tue Nov 22 08:40:37 2022&quot;</code></pre>
+<pre><code>## [1] &quot;Wed Nov 23 14:42:30 2022&quot;</code></pre>
 <p>The Harrison &amp; Pius book seems to work well for revising R syntax
 as well as learning some new tricks already for data transformations
 (<em>mutate()</em>, <em>summarise()</em>, <em>pivot_wider()</em>,
@@ -451,7 +453,7 @@ in the future in my own research.</p>
 <h1>Regression and model validation</h1>
 <p><em>Jump straight to the <a href="#assignment">assignments</a>.</em></p>
 <pre class="r"><code>date()</code></pre>
-<pre><code>## [1] &quot;Tue Nov 22 08:40:37 2022&quot;</code></pre>
+<pre><code>## [1] &quot;Wed Nov 23 14:42:30 2022&quot;</code></pre>
 <p>The core idea of regression analysis is to use statistical methods to
 assess the way in which a change in circumstances affect variation in an
 observed random variable. This section summarises my notes for the
@@ -795,7 +797,7 @@ regression model.</p>
 <h1>Logistic regression</h1>
 <p><em>Jump straight to the <a href="#assignment_log_regression">assignments</a>.</em></p>
 <pre class="r"><code>date()</code></pre>
-<pre><code>## [1] &quot;Tue Nov 22 08:40:45 2022&quot;</code></pre>
+<pre><code>## [1] &quot;Wed Nov 23 14:42:38 2022&quot;</code></pre>
 <p>This part of the course will focus on Logistic Regression, which is a
 type of models where the output is categorical. For example, if we want
 to predict whether an email is spam or not, or whether a tumor is malign
@@ -1057,15 +1059,32 @@ cv &lt;- cv.glm(data = alc, cost = loss_func, glmfit = m2, K = 10)
 
 # average number of wrong predictions in the cross validation
 cv$delta[1]</code></pre>
-<pre><code>## [1] 0.2108108</code></pre>
+<pre><code>## [1] 0.2</code></pre>
 <p>I can get loss of approximately 0.2 in cross-validation by adding
 <code>sex</code>, <code>failures</code>, <code>absences</code>,
 <code>famrel</code>, <code>goout</code>, and <code>health</code> to the
 model features.</p>
 <hr />
+</div>
+</div>
+</div>
+<div id="clustering-and-classification" class="section level1">
+<h1>Clustering and classification</h1>
+<p><em>Jump straight to the <a href="#assignment_k-means">assignments</a>.</em></p>
+<pre class="r"><code>date()</code></pre>
+<pre><code>## [1] &quot;Wed Nov 23 14:42:41 2022&quot;</code></pre>
+<p>This chapter focuses on a set of clustering methods, designed for
+visualizing and exploring statistical data. In general, we want to train
+a model that can position data points to different clusters (or groups)
+based on their characteristics. After the model is trained, it can be
+used for unseen data to classify that data to the learnt clusters. The
+most popular of these methods is <strong>k-means
+clustering</strong>.</p>
+<div id="assignment_k-means" class="section level3">
+<h3>Assignments</h3>
+<hr />
 <p>(more chapters to be added similarly as we proceed with the
 course!)</p>
-</div>
 </div>
 </div>
 <div class="footnotes footnotes-end-of-document">
