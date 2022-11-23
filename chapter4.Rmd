@@ -6,8 +6,6 @@ editor_options:
 
 # Clustering and classification
 
-*Jump straight to the [assignments](#assignment_k-means).*
-
 ```{r}
 date()
 ```
