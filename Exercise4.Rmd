@@ -248,14 +248,14 @@ comma in a vector - Remember that strings need the quotes around them -
 # Boston and boston_scaled are available
 
 # summary of the scaled crime rate
-summary(boston_scaled$crim)
+summary(boston_scaled$crime)
 
 # create a quantile vector of crim and print it
-bins <- quantile(boston_scaled$crim)
+bins <- quantile(boston_scaled$crime)
 bins
 
 # create a categorical variable 'crime'
-crime <- cut(boston_scaled$crim,
+crime <- cut(boston_scaled$crime,
              breaks = bins,
              include.lowest = TRUE,
              label = c("low", "med_low", "med_high", "high"))
@@ -264,7 +264,7 @@ crime <- cut(boston_scaled$crim,
 table(crime)
 
 # remove original crim from the dataset
-boston_scaled <- dplyr::select(boston_scaled, -crim)
+boston_scaled <- dplyr::select(boston_scaled, -crime)
 
 # add the new categorical value to scaled data
 boston_scaled <- data.frame(boston_scaled, crime)
@@ -478,10 +478,11 @@ object - You can get the predicted classes with `lda.pred$class`
 # lda.fit, correct_classes and test are available
 
 # predict classes with test data
-lda.pred <- predict(lda.fit, newdata = "change me!")
+lda.pred <- predict(lda.fit, newdata = test)
 
 # cross tabulate the results
-table(correct = "change me!", predicted = "change me!")
+predictions <- lda.pred$class
+table(correct = correct_classes, predicted = predictions)
 
 ```
 
@@ -531,17 +532,16 @@ quotes in R
 # Boston dataset is available
 
 # euclidean distance matrix
-dist_eu <- "change me!"
+dist_eu <- dist(Boston)
 
 # look at the summary of the distances
-
+summary(dist_eu)
 
 # manhattan distance matrix
-dist_man <- "change me!"
+dist_man <- dist(Boston, method = "manhattan")
 
 # look at the summary of the distances
-
-
+summary(dist_man)
 ```
 
 ## 4.9 K-means clustering
@@ -589,13 +589,10 @@ the cluster numbers with `km$cluster`
 # Boston dataset is available
 
 # k-means clustering
-km <- kmeans(Boston, centers = "change me!")
+km <- kmeans(Boston, centers = 3)
 
 # plot the Boston dataset with clusters
-pairs(Boston, col = "change me!")
-
-
-
+pairs(Boston[6:10], col = km$cluster)
 ```
 
 ## 4.10 K-means: determine the k
@@ -646,7 +643,7 @@ argument in `kmeans()` - Numeric values do not need quotes in R
 set.seed(123)
 
 # determine the number of clusters
-k_max <- "change me!"
+k_max <- 10
 
 # calculate the total within sum of squares
 twcss <- sapply(1:k_max, function(k){kmeans(Boston, k)$tot.withinss})
@@ -655,7 +652,7 @@ twcss <- sapply(1:k_max, function(k){kmeans(Boston, k)$tot.withinss})
 qplot(x = 1:k_max, y = twcss, geom = 'line')
 
 # k-means clustering
-km <- kmeans(Boston, centers = "change me!")
+km <- kmeans(Boston, centers = 2)
 
 # plot the Boston dataset with clusters
 pairs(Boston, col = km$cluster)

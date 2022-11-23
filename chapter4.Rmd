@@ -10,6 +10,227 @@ editor_options:
 date()
 ```
 
-This chapter focuses on a set of clustering methods, designed for visualizing and exploring statistical data. In general, we want to train a model that can position data points to different clusters (or groups) based on their characteristics. After the model is trained, it can be used for unseen data to classify that data to the learnt clusters. The most popular of these methods is __k-means clustering__.
+This chapter focuses on a set of clustering methods, designed for
+visualizing and exploring statistical data. In general, we want to train
+a model that can position data points to different clusters (or groups)
+based on their characteristics. After the model is trained, it can be
+used for unseen data to classify that data to the learnt clusters. The
+most popular of these methods is **k-means clustering**.
 
 ### Assignments {#assignment_k-means}
+
+```{r}
+library(MASS)
+
+# load the data
+data("Boston")
+
+# explore the dataset
+str(Boston)
+dim(Boston)
+```
+
+The Boston dataset represents different explanatory variables related to the housing value in suburbs of Boston. The data consists of 506 observations and 14 variables. In practice, the variables are such that can be assumed to impact housing values, e.g., crime rate, air quality, average number of rooms, median value of owner-occupied homes, etc. More information about the data can be found from [here](https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/Boston.html).
+
+
+```{r}
+# plot matrix of the variables
+pairs(Boston)
+```
+
+Plot matrix shows a graphical overview of the data. However, this visualization is rather difficult to read. Correlation matrix provides a slightly clearer visualization.
+
+```{r}
+library(corrplot)
+
+# calculate the correlation matrix and round it
+cor_matrix <- cor(Boston)
+
+# visualize the correlation matrix
+corrplot(cor_matrix, method="circle")
+```
+
+From the correlation matrix, we can interpret the relationships between different variables. For instance, it seems that proportion of non-retail business acres per town, indicated by `indus`, has a rather high negative correlation with weighted mean of distances to five Boston employment centres, indicated by `dis`. Unsurprisingly, `indus` also seems to have a high (positive) correlation with nitrogen oxides concentration (parts per 10 million), indicated by `nox`. Median value of owned homes (`medv`) seems to correlate positively with number of rooms (`rm`), and negatively with lower status of the population (`lstat`).
+
+What I think we can read from this data is, for instance, that in areas where the median value of owned homes (`medv`) is high, we see less crime, less noon-retail businesses, better air quality, more rooms in houses, less pupils per teacher, etc, based on the correlations between the variables.
+
+Summaries of the variables:
+
+```{r}
+# summaries of the variables of the data
+summary(Boston)
+```
+
+
+Next, we standardize the values with:
+
+$$
+scaled(x) = \frac{x-mean(x)}{std(x)}
+$$
+
+```{r}
+# center and standardize variables
+boston_scaled <- scale(Boston)
+
+# summaries of the scaled variables
+summary(boston_scaled)
+
+# change the object to data frame
+boston_scaled <- as.data.frame(boston_scaled)
+```
+
+Next, we use the scaled values of the crime rate to create bins where we store crime rates as categorical variables (scale of four from low crime rate to high crime rate). Furthermore, we drom the old crime rates from the data, and replace them with the crime rate quantiles.
+
+
+```{r}
+
+boston_scaled$crim <- as.numeric(boston_scaled$crim)
+
+# create a quantile vector of crim and print it
+bins <- quantile(boston_scaled$crim)
+bins
+
+# create a categorical variable 'crime'
+crime <- cut(boston_scaled$crim,
+             breaks = bins,
+             include.lowest = TRUE,
+             label = c("low", "med_low", "med_high", "high"))
+
+# look at the table of the new factor crime
+table(crime)
+
+# remove original crim from the dataset
+boston_scaled <- dplyr::select(boston_scaled, -crim)
+
+# add the new categorical value to scaled data
+boston_scaled <- data.frame(boston_scaled, crime)
+```
+
+Before we can train a model for k-means clustering (or any other ML technique), we should split the data to train and test sets. Here, we create a split of 80% of training data, and 20% of test data. For tuning the model, we might want to also get development data, so our split could be 80-10-10, but for now, we keep with 80-20. To the best of my understanding, from now on, each row in the data (consisting of observations for 14 variables) will become a 13-dimensional vector that represents one data point for our model. The output, predicted from the 13-dimensional vector should then be the crime rate class (4 classes: low, med_low, med_high, high).
+
+```{r}
+# number of rows in the Boston dataset 
+n <- nrow(boston_scaled)
+
+# choose randomly 80% of the rows
+ind <- sample(n,  size = n * 0.8)
+
+# create train set
+train <- boston_scaled[ind,]
+
+# create test set 
+test <- boston_scaled[-ind,]
+
+# save the correct classes from test data
+correct_classes <- test$crime
+
+# remove the crime variable from test data
+test <- dplyr::select(test, -crime)
+
+nrow(train); nrow(test);
+```
+
+Next, we fit the LDA model to the training data.
+
+```{r}
+# LDA
+lda.fit <- lda(crime ~ ., data = train)
+
+# the function for lda biplot arrows
+lda.arrows <- function(x, myscale = 1, arrow_heads = 0.1, color = "red", tex = 0.75, choices = c(1,2)){
+  heads <- coef(x)
+  arrows(x0 = 0, y0 = 0, 
+         x1 = myscale * heads[,choices[1]], 
+         y1 = myscale * heads[,choices[2]], col=color, length = arrow_heads)
+  text(myscale * heads[,choices], labels = row.names(heads), 
+       cex = tex, col=color, pos=3)
+}
+
+# target classes as numeric
+classes <- as.numeric(crime)
+
+# plot the lda results
+plot(lda.fit, dimen = 2)
+lda.arrows(lda.fit, myscale = 2)
+```
+
+In the 2-dimensional visualization of the Linear Discriminant Analysis, we see that the crime clusters are rather clear, high crime rates being in the right part of the space, whereas med_high is positioned to the bottom of the space. Low crime rate is at the top left of the space. Med_high and med_low seem to create a larger cloud that is not very clearly separated, likely because their values are also close to each others when we generated the bins of the crime rates. Additionally, from the visualization, we can observe where variables are clustered by the model. We see that the model associates index of accessibility to radial highways (`rad`) quite strongly with high crime rate, whereas proportion of residential land zoned for lots over 25,000 sq.ft. (`zn`) is quite strongly associated with low crime rate.
+
+Let us then see how the clustering model generalizes to unseen data.
+
+```{r}
+# predict classes with test data
+lda.pred <- predict(lda.fit, newdata = test)
+
+# cross tabulate the results
+predictions <- lda.pred$class
+table(correct = correct_classes, predicted = predictions)
+```
+
+The model does not seem very robust, and it predicts wrong labels especially when the correct label is med_low. However, those are the more difficult examples to predict correctly.
+
+Finally, let us calculate the distances between the observations, and run k-means clustering.
+
+```{r}
+library(MASS)
+data("Boston")
+boston_scaled <- as.data.frame(scale(Boston))
+
+# euclidean distance
+dist <- dist(boston_scaled, method = "euclidean")
+
+# look at the summary of the distances
+summary(dist)
+```
+
+
+__K-means__
+
+```{r}
+set.seed(13)
+
+# k-means clustering with 4 clusters
+km <- kmeans(Boston, centers = 4)
+
+# plot the Boston dataset with clusters
+pairs(boston_scaled, col = km$cluster)
+```
+
+The clusters are not very visible from such a small scatter plot matrix.
+
+```{r}
+pairs(boston_scaled[6:10], col = km$cluster)
+```
+
+Here we notice that some of the clusters are on top of each others, and the number of clusters is potentially too high. Let's attempt at finding the optimal number of clusters.
+
+
+```{r}
+set.seed(123)
+
+# determine the number of clusters
+k_max <- 10
+
+# calculate the total within sum of squares
+twcss <- sapply(1:k_max, function(k){kmeans(boston_scaled, k)$tot.withinss})
+
+# visualize the results
+qplot(x = 1:k_max, y = twcss, geom = 'line')
+```
+
+
+Above, the within cluster sum of squares (WCSS) provides us a way to find the optimal number of clusters. Practically, the optimal number is that where the value changes radically. From the visualization, we can approximate that the optimal number of clusters is 2, because at that point the value changes quite a lot.
+
+```{r}
+# New k-means with 2 clusters
+km <- kmeans(boston_scaled, centers = 2)
+
+# plot the scaled Boston dataset with 2 clusters
+pairs(Boston, col = km$cluster)
+```
+
+```{r}
+pairs(boston_scaled[6:10], col = km$cluster)
+```
+
+Now the clusters are perhaps more visible, and, hopefully, in their own positions in the space.
