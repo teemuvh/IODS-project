@@ -7,6 +7,13 @@ editor_options:
 # Dimensionality reduction
 
 This weeks material will focus on a set of statistical methods that fall under the term *dimensionality reduction*.
-In practice, dimensionality reduction is a way to recognize and visualize the dimensions that carry the most information from a multidimensional data by collecting as much variance as possible from the original variables. One of the most well-known methods in dimensionality reduction is __Principal Component Analysis (PCA)__. After we have recognized the principal components, we can observe the components in a 2-dimensional space, which would not be possible without performing dimensionality reduction.
+In practice, dimensionality reduction is a way to recognize and visualize the dimensions that carry the most information from a multidimensional data by collecting as much variance as possible from the original variables. One of the most well-known methods in dimensionality reduction is __Principal Component Analysis (PCA)__. After we have recognized the principal components by a few matrix transformations, we can observe the components in a 2-dimensional space, which would not be possible without performing dimensionality reduction.
 
 Another method we focus on is __Multiple correspondence analysis (MCA)__, with which we can find suitable transformations from classified variables to continuous scales and then reducing the dimensions with the PCA for visualization purposes.
+
+__Task 5: Data wrangling__
+
+Done, and the assignment is in the latter part of [this file](https://github.com/teemuvh/IODS-project/blob/master/data/create_human.R).
+
+__Task 5: Analysis__
+
