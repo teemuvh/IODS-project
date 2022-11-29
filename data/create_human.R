@@ -121,4 +121,5 @@ rownames(human_new) <- human_new$Country
 keep <- c("Edu2.FM", "Labo.FM", "Edu.Exp", "Life.Exp", "GNI", "Mat.Mor", "Ado.Birth", "Parli.F")
 human_new <- dplyr::select(human_new, one_of(keep))
 
-write_csv(human_new, "data/human.csv")
+write.table(human_new, "data/human.txt", append = FALSE, sep = ",", dec = ".",
+            row.names = TRUE, col.names = TRUE)
