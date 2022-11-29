@@ -17,3 +17,150 @@ Done, and the assignment is in the latter part of [this file](https://github.com
 
 __Task 5: Analysis__
 
+```{r}
+library(dplyr)
+human <- read.table("data/human.txt", sep = ",", header = T)
+```
+
+Now that we have wrangled the "human" data, we can start working on the analysis part. The data consists of 155 observations and 8 explanatory variables. These observations are designed to capture a wider representation of the development of a country than merely looking at the economic growth would do. Thus, the data includes variables related gender inequality, life expectancy, eduaction, *et cetera*. More information about the data can be obtained from [here](https://hdr.undp.org/data-center/human-development-index). The below figure provides a graphical overview of the data.
+
+```{r}
+library(GGally)
+ggpairs(human)
+summary(human)
+```
+
+
+From the above visualization, we can observe how the variables interact with each others in terms of Pearson correlation coefficient (right of the diagonal). For instance, if we consider adolescent birth rate (`Ado.Birth`), we can easily see that it correlates strongly with the ratio of female and male education (`Edu2.FM`), as well as with expected years of education (`Edu.Exp`), life expectancy (`Life.Exp`), and GNI, and maternal mortality (`Mat.Mor`). 
+
+From the scatter plots (left of the diagonal), we can observe some correlation with the data points. For example, expected years of education (`Edu.Exp`) seems to positively correlate with life expectancy (`Life.Exp`). Similarly, for instance expected years of education seems to negatively correlate with maternal mortality.
+
+These information are perhaps more easily visible from a heat map of correlations, represented in the figure below. In the heat map, the darker the color, the more correlation between the variables. Blue color indicates positive correlation, whereas red color indicates negative correlation. If we look at the variables discussed above, we notice that adolescent birth rate correlates rather strongly with the ratio of education (`Edu2.FM`), and even more with life expectany, for instance. If we consider expected years of education, we notice that it has a strong positive correlation with life expectancy, and a high negative correlation with maternal mortality. Thus, we can read that education increases the life expectancy, and decreases the maternal mortality.
+
+```{r}
+library(corrplot)
+cor(human) %>%
+  corrplot(method="color")
+```
+
+Now that we have summarized and observed the data a little, we can move to dimensionality reduction.
+
+PCA performs SVD-decomposition to find the principal components of the data. The first component will explain most of the variance, and the second component, which is orthogonal to the first component, will explain most of the variance after the first component has been removed. This way, we will obtain two dimensions, one represents principal component 1, and the second represents principal component 2.
+
+
+```{r}
+# perform principal component analysis (with the SVD method)
+pca_human <- prcomp(human, scale = FALSE)
+pca_human_std <- prcomp(human, scale = TRUE)
+
+sh <- summary(pca_human)
+sh_std <- summary(pca_human_std)
+
+pca_pr_sh <- round(100*sh$importance[2, ], digits = 1)
+pca_pr_sh_std <- round(100*sh_std$importance[2, ], digits = 1)
+
+pc_lab_sh <- paste0(names(pca_pr_sh), " (", pca_pr_sh, "%)")
+pc_lab_sh_std <- paste0(names(pca_pr_sh_std), " (", pca_pr_sh_std, "%)")
+
+# draw a biplot of the principal component representation and the original variables
+biplot(pca_human,
+       choices = 1:2, 
+       cex = c(0.5, 0.5), 
+       col = c("grey40", "deeppink2"),
+       xlab = pc_lab_sh[1], ylab = pc_lab_sh[2]
+       )
+
+biplot(pca_human_std, 
+       choices = 1:2,
+       cex = c(0.5, 0.5),
+       col = c("grey40", "deeppink2"),
+       xlab = pc_lab_sh_std[1], ylab = pc_lab_sh_std[2],
+       )
+```
+
+
+From the visualizations above, we can observe that it is necessary to standardize the data before applying PCA. As PCA aims to maximize the variance, non-standardized data can seem like some component dictates the variance, when, in truth, some other components might also contribute (first figure). After standardizing the data, the model can actually find the components that maximize the variance (second figure). This is also suggested by the values in the summaries of the PCA (below). Based on the proportion of variances explained by the different principal components, PCA suggests that the first principal component explains practically all of the variance in the non-standardized data. However, when we standardize the data, PCA suggests that the first principal component explains slightly more than half of the variance, whereas the second principal component explains approximately 16% of the variance.
+
+
+```{r}
+sh; sh_std
+```
+
+
+We can also attempt at interpreting the principal components. I focus on the PCA of the standardized data (second figure above). It seems that life expectancy, and expected years of education (as well as the ratio between male and female expected education) increase in the countries clustered to the left of the space. Similarly, the number of female representatives in the parliament seems to increase to the top left corner of the space. Many countries in the left side of the space seem to be European or East Asian, but there are also a couple of rich countries from the Arabian peninsula. Countries in the top left corner of the space seem to be mostly Scandinavian countries. Countries clustered on right end of the space seem to be mostly from the African continent. In these countries, maternal mortality seems to be high, with also high adolescence birth rate, the two being phenomena that probably go hand in hand.
+
+Finally, my personal interpretation of the first two principal components of the standardized dataset: the first principal component seems to represent life expectancy, and variables that correspond to life expectancy. The second principal component seems to somewhat represent gender inequality.
+
+#### Tea data
+
+In the final part of this exercise, we investigate a dataset that consists of answers to a questionnaire about tea consumption.
+
+```{r}
+tea <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/Helsinki-Open-Data-Science/master/datasets/tea.csv", 
+                  sep = ",", header = T)
+```
+
+```{r}
+str(tea); dim(tea)
+```
+
+
+All the variables are categorical. Thus, we need to convert them all to factors.
+
+```{r}
+col_names <- names(tea)
+tea[,col_names] <- lapply(tea[,col_names] , factor)
+
+str(tea)
+```
+
+
+```{r}
+# visualize the dataset
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+vis <- pivot_longer(tea, cols = everything()) %>% 
+  ggplot(aes(value)) + 
+  facet_wrap("name", scales = "free") + 
+  geom_bar() + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 0))
+
+vis
+```
+
+I somehow could not fit the visualization of all the variables in this page so that they would include the labels for the bars. Thus, I select a few of the variables and plot them again with the labels. These selected variables are also used for MCA soon.
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# column names to keep in the dataset
+keep <- c("Tea", "How", "how", "sugar", "where", "lunch", "breakfast")
+
+# select the 'keep_columns' to create a new dataset
+tea_time <- dplyr::select(tea, one_of(keep))
+
+# visualize the dataset
+vis_ <- pivot_longer(tea_time, cols = everything()) %>% 
+  ggplot(aes(value)) + 
+  facet_wrap("name", scales = "free") + 
+  geom_bar() + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
+
+vis_
+```
+
+```{r}
+library(FactoMineR)
+
+mca <- MCA(tea_time, graph = FALSE)
+
+# visualize MCA
+plot(mca, invisible=c("ind"), graph.type = "classic", habillage = "quali")
+```
+
+
+In the visualization above, different colors correspond to different variables in the data. Black indicates the type of tea, pink indicates where the tea was purchased from, green indicates how the tea is packaged, red indicates how it is enjoyed (with milk, lemon, other, or alone), brown indicates whether the tea is consumed at lunch, and grey whether it is enjoyed on breakfast. From the MCA results, we can observe that for instance, green tea is rather typically bought unpackaged from a tea shop, whereas Earl Grey and black tea are more typically bought in tea bags from a chain store. Earl Grey seems to be enjoyed more with milk and sugar, whereas black tea is enjoyed with lemon. It seems that Earl Grey is a good breakfast tea, especially with milk, whereas green tea alone could be better suited outside of lunch or breakfast.
