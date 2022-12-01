@@ -54,16 +54,13 @@ gender_ineq <- gender_ineq %>%
 
 human <- inner_join(human_dev, gender_ineq, by = "country")
 
-write_csv(human, "data/human.csv")
+write.table(human, "data/human.txt", append = FALSE, sep = ",", dec = ".",
+            row.names = TRUE, col.names = TRUE)
 
 
 
 # *** ASSIGNMENT 5: DATA WRANGLING (29.11.2022) ***
-# Read the data we wrangled in the earlier exercise
-# I am using the ready data, because for some reason, the script didn't read my data correctly
-# If I read with read_csv, it returns 195 obs. and 19 variables, but with read.table it returns 164 obs. 19 variables and
-# joins multiple countries into one cell for some reason...
-human_new <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/Helsinki-Open-Data-Science/master/datasets/human1.txt",
+human_new <- read.table("data/human.txt",
                       sep=",", header = T)
 
 str(human_new); dim(human_new)
@@ -72,38 +69,38 @@ str(human_new); dim(human_new)
 # diverse manner than only by economic growth. Thus, the data consists of other variables as well,
 # such as variables related to gender inequality, life expectancy, education, etc.
 # The variables are:
-# HDI.Rank: Human Development Index Rank
-# Country: Country
-# HDI: Human Development Index
-# Life.Exp: Life Expectancy at Birth
-# Edu.Exp: Expected Years of Education
-# Edu.Mean: Mean Years of Education
-# GNI: Gross National Income per Capita
-# GNI.Minus.Rank: GNI per Capita Rank Minus HDI Rank
-# GII.Rank: Gender Inequality Index Rank
-# GII: Gender Inequality Index
-# Mat.Mor: Maternal Mortality Ratio
-# Ado.Birth: Adolescent Birth Rate
-# Parli.F: Percent Representation in Parliament
-# Edu2.F: Population with Secondary Education (Female)
-# Edu2.M: Population with Secondary Education (Male)
-# Labo.F: Labour Force Participation Rate (Female)
-# Labo.M: Labour Force Participation Rate (Male)
-# Edu2.FM: Ratio of Female and Male Populations with Secondary Education
-# Labo.FM: Ratio of Labor Force Participation of Female and Male Populations in Each Country
+# hdi.rank: Human Development Index Rank
+# country: Country
+# hdi: Human Development Index
+# life.exp: Life Expectancy at Birth
+# edu.exp: Expected Years of Education
+# edu.mean: Mean Years of Education
+# gni: Gross National Income per Capita
+# gni-hdi rank: GNI per Capita Rank Minus HDI Rank
+# gii.rank: Gender Inequality Index Rank
+# gii: Gender Inequality Index
+# maternal.mortality.ratio: Maternal Mortality Ratio
+# ado.birth.rate: Adolescent Birth Rate
+# parli.f: Percent Representation in Parliament
+# edu.f: Population with Secondary Education (Female)
+# edu.m: Population with Secondary Education (Male)
+# labo.f: Labour Force Participation Rate (Female)
+# labo.m: Labour Force Participation Rate (Male)
+# edu.fm: Ratio of Female and Male Populations with Secondary Education
+# labo.fm: Ratio of Labor Force Participation of Female and Male Populations in Each Country
 
 library(stringr)
 
 # look at the structure of the GNI column in 'human'
-str(human_new$GNI)
+str(human_new$gni)
 
 # GNI as numeric variable
-human_new$GNI <- str_replace(human_new$GNI, pattern=",", replace ="") %>%
+human_new$gni <- str_replace(human_new$gni, pattern=",", replace ="") %>%
   as.numeric()
 
 library(dplyr)
 # Choose which columns to keep
-keep <- c("Country", "Edu2.FM", "Labo.FM", "Edu.Exp", "Life.Exp", "GNI", "Mat.Mor", "Ado.Birth", "Parli.F")
+keep <- c("country", "edu.fm", "labo.fm", "edu.exp", "life.exp", "gni", "maternal.mortality.ratio", "ado.birth.rate", "parli.f")
 # Keep only those columns
 human_new <- dplyr::select(human_new, one_of(keep))
 
@@ -115,10 +112,10 @@ last <- nrow(human_new) - 7
 human_new <- human_new[1:last, ]
 
 # Define the row names of the data by the country names
-rownames(human_new) <- human_new$Country
+rownames(human_new) <- human_new$country
 # Drop country from columns:
 # Choose which columns to keep
-keep <- c("Edu2.FM", "Labo.FM", "Edu.Exp", "Life.Exp", "GNI", "Mat.Mor", "Ado.Birth", "Parli.F")
+keep <- c("edu.fm", "labo.fm", "edu.exp", "life.exp", "gni", "maternal.mortality.ratio", "ado.birth.rate", "parli.f")
 human_new <- dplyr::select(human_new, one_of(keep))
 
 write.table(human_new, "data/human.txt", append = FALSE, sep = ",", dec = ".",
