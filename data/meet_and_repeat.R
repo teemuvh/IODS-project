@@ -1,5 +1,5 @@
 # Teemu Vahtola, 01.12.2022
-# Assignment 5: Data Wrangling
+# Assignment 6: Data Wrangling
 
 # Read the data
 BPRS <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/MABS/master/Examples/data/BPRS.txt",
