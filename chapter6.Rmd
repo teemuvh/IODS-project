@@ -1,0 +1,252 @@
+---
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+# Analysis of Longitudinal Data
+
+The last chapter of this IODS course will focus on analysis of longitudinal data. Contrary to the previous chapters, in this chapter, the data that we explore will have observations that correlate with each others. This dependency introduces another challenge for predictive models. Now, we have multiple observations of the same individuals (e.g., repeated measures over time). To overcome this challenge, we will study a class of methods, the __linear mixed effect__ models. We consider two different models: the __random intercept model__ and the __random intercept and slope model__.
+
+__Task 1: Data Wrangling__
+
+Done, and can be found [here](https://github.com/teemuvh/IODS-project/blob/master/data/meet_and_repeat.R).
+
+__Task 2: Analysis__
+
+__Task a:__
+
+In this exercise, I attempt at replicating the analysis in the course material (chapter 8 of Vehkalahti & Everitt, 2019) using the *rats* data. This data consists of a set of longitudinal observations of 16 rats representing their body weights (in grams) over a 9-week period. Each rat is assigned into a group (1--3) and is identified by their id (1--16). The observations are their body weights. The data was transformed into a long form table in the data wrangling exercise, so it is already ready for further analysis.
+
+```{r}
+library(dplyr)
+
+RATS <- read.table("data/ratsl.txt", sep = ",", header = T)
+
+RATS$ID <- factor(RATS$ID)
+RATS$Group <- factor(RATS$Group)
+
+glimpse(RATS)
+```
+
+
+```{r}
+#Access the package ggplot2
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Plot RATS data by group
+library(ggplot2)
+ggplot(RATS, aes(x = Time, y = Weight, linetype = Group, col = ID)) +
+  geom_line() +
+  scale_x_continuous(limits = c(min(RATS$Time), max(RATS$Time)), name = "Time (days)", breaks = seq(0, 64, 7)) +
+  facet_grid(. ~ Group, labeller = label_both) +
+  scale_y_continuous(name = "Weights (grams)") +
+  theme(legend.position = "top")
+```
+
+
+Above, I plot the visualizations so that it would be rather easy to assess the difference in weights every one week in each group and each individual. We can observe a slight increasing trend in all of the groups. Next, I standardize the weights to see if that helps in visualizing the phenomenon.
+
+```{r}
+RATS_std <- RATS %>%
+  group_by(ID) %>%
+  mutate(stdweight = (Weight - mean(Weight))/sd(Weight)) %>%
+  ungroup()
+
+glimpse(RATS)
+glimpse(RATS_std)
+
+library(ggplot2)
+ggplot(RATS_std, aes(x = Time, y = stdweight, linetype = Group, col = ID)) +
+  geom_line() +
+  scale_x_continuous(name = "Time (days)", breaks = seq(0, 64, 7)) +
+  facet_grid(. ~ Group, labeller = label_both) +
+  scale_y_continuous(name = "Weights (std)") +
+  theme(legend.position = "top")
+```
+
+After standardizing the data, we can see the increase in the observed weights easier.
+
+The next step is to provide a graph that shows a summary measure of the longitudinal data. Here, the weights of each individual in each time point are transformed into a single value, that can reveal interesting features of the measure over time. First, I group the data by the groups of the individuals (1--3), and present a box plot of the mean weights of the different groups beginning from the first time point (time > 0). This will transform the data of 176 observations (16 individuals and 11 time points) to 16 observations (mean of the weights of the individuals), one for each individual. From the first box plot, we can see that there are some outliers in the mean weight data. The outlier in the second group seems to be especially far from the IQR, and, thus, I remove it from the data. I decided to leave the other groups as they are.
+
+
+```{r}
+library(dplyr)
+library(tidyr)
+# Create a summary data by treatment and subject with mean as the summary variable (ignoring baseline week 0)
+RATSS <- RATS %>%
+  filter(Time > 0) %>%
+  group_by(Group, ID) %>%
+  summarise( mean=mean(Weight) ) %>%
+  ungroup()
+
+# Draw a boxplot of the mean versus treatment
+library(ggplot2)
+ggplot(RATSS, aes(x = Group, y = mean)) +
+  geom_boxplot() +
+  stat_summary(fun = "mean", geom = "point", shape=23, size=4, fill = "white") +
+  scale_y_continuous(name = "mean(Weight), days 1-64")
+
+# Create a new data by filtering the outlier and adjust the ggplot code then draw the plot again with the new data
+RATSS1 <- RATSS %>%
+  filter(mean < 580)
+
+library(ggplot2)
+ggplot(RATSS1, aes(x = Group, y = mean)) +
+  geom_boxplot() +
+  stat_summary(fun = "mean", geom = "point", shape=23, size=4, fill = "white") +
+  scale_y_continuous(name = "mean(Weight), days 1-64")
+```
+
+Next, I attempt to visualize the means response profiles of the groups over time. This figure (below) represents the variation of the observations in each time point of the experiment. We can notice that there is only very little variation in groups 1 and 3, but a slightly more variation in group 2. Additionally, we notice, again, a slight increase in weights over time.
+
+
+```{r}
+# Number of subjects (per group):
+n <- 11
+
+library(dplyr)
+library(tidyr)
+# Summary data with mean and standard error of Weight by Group and Time 
+RATSS2 <- RATS %>%
+  group_by(Group, Time) %>%
+  summarise( mean = mean(Weight), se = sd(Weight)/sqrt(n) ) %>%
+  ungroup()
+
+# Plot the mean profiles
+library(ggplot2)
+ggplot(RATSS2, aes(x = Time, y = mean, col = Group)) +
+  geom_line() +
+  geom_point(size=2) +
+  geom_errorbar(aes(ymin=mean-se, ymax=mean+se), width=0.3) +
+  theme(legend.position = "right") +
+  scale_y_continuous(name = "mean(Weight) +/- se(Weight)") +
+  scale_x_continuous(name = "Time (days)", breaks = seq(1, 64, 7))
+```
+
+
+Finally, I apply the ANOVA to the groups to assess any differences. The result of the F-test seems to suggest that the mean weight across the groups is not the same. And as we looked at the box plots above, it seems to be true. Now this data should be usable in further analysis, such as linear mixed effect models.
+
+```{r}
+summary(aov(mean ~ Group, data = RATSS1))
+```
+
+
+__Task b:__
+
+After processing the RATS data ready to be used in a more formal analysis, we actually change to another data set which we use in the more advanced methods for working with dependent, longitudinal data. The focus in on *linear mixed effect models*. The data we consider in the rest of the exercise is the BPRS data set. This data gathers information of two groups of 40 randomly assigned male subjects. The individuals were rated on a brief psychiatric rating scale (BPRS) on weekly intervals for eight weeks. The tests are designed to evaluate patients suspected of having schizophrenia. The data has been formatted into a long form table earlier in the data wrangling exercise. Let us start by reading the data, and creating some plots to help with understanding the data. This visualization shows the effect of the treatment of each individual in the two treatment groups. We can, perhaps, notice a slightly more visible decreasing trend on the first treatment group. However, it is not safe to make any conclusions from these plots.
+
+```{r}
+library(dplyr)
+
+BPRS <- read.table("data/bprsl.txt", sep = ",", header = T)
+
+BPRS$treatment <- factor(BPRS$treatment)
+BPRS$subject <- factor(BPRS$subject)
+
+BPRS <-  BPRS %>% 
+  mutate(week = as.integer(substr(weeks,5,5)))
+
+glimpse(BPRS)
+```
+
+```{r}
+library(dplyr)
+library(tidyr)
+# Check the dimensions of the data
+dim(BPRS)
+
+# Plot the data
+library(ggplot2)
+ggplot(BPRS, aes(x = week, y = bprs, group = subject)) +
+  geom_line(aes(col = subject)) +
+  theme(legend.position = "top") +
+  facet_grid(. ~ treatment, labeller = label_both)
+```
+
+Because the data in longitudinal, i.e., we expect the data points of individual subjects to have mutual dependencies, we can not fit a simple linear regression model to the data. The model experimented with here is the *Random Intercept model*. This model does not assume the repeated measures to be independent of each others, and thus allows us to fit a linear regression model for each individual so that the fit differs in intercept from the other individuals. However, let us first assess how a simple linear regression model fits to the data to obtain a baseline.
+
+```{r}
+# regression model
+BPRS_reg <- lm(BPRS$bprs ~ BPRS$week + BPRS$treatment)
+
+# summary of the model
+summary(BPRS_reg)
+```
+
+```{r}
+# access library lme4
+library(lme4)
+
+# random intercept model
+BPRS_ref <- lmer(bprs ~ week + treatment + (1 | subject), data = BPRS, REML = FALSE)
+
+# summary of the model
+summary(BPRS_ref)
+```
+
+Based on the results of the fitted random intercept model above, the estimated variance of the subject random effects does not seem really large (47.41). This indicates that there is not so high variation between the intercepts of the regression fits between the individuals. Additionally, the estimated standard error of `week` is only slightly lower compared to the model that assumes independence between the variables. Based on this experiment, it does not seem that there is much difference between the models.
+
+Next, I fit a *random intercept and slope* model that, in addition to allowing the regression model's fit differ in intercept from the other individuals, it also allows the same for the slopes. Here, the estimated variance of the subject random effects is already considerably higher, indicating variation between the intercepts of the regression fits of the individuals. Standard error is slightly higher than earlier, though. Again, it does not seem that the difference between the models is really large.
+
+```{r}
+# random intercept and random slope model
+library(lme4)
+BPRS_ref1 <- lmer(bprs ~ week + treatment + (week | subject), data = BPRS, REML = FALSE)
+
+# print a summary of the model
+summary(BPRS_ref1)
+```
+
+
+As a next step, I perform the ANOVA test for the two random intercept models. From the Chi-squared test results below, we can read that the result is slightly significant (p = 0.026). Thus, we can reject the null hypothesis that the correlation between the random intercept and slope is 0.
+
+```{r}
+anova(BPRS_ref1, BPRS_ref)
+```
+
+
+Finally, we fit a random intercept and slope model with interaction between time and treatment. The visualizations in the end of this page suggest that the model fits the data well. However, looking at the results of the ANOVA below, it does not seem like the difference between the model with interaction and the model without it is significant (Chi-square, p = 0.075). To conclude, for the BPRS data, either random intecept and slope model is better than only a linear regression model, but it does not seem to matter much whether the random intercept and slope model includes interaction or not.
+
+
+```{r}
+# create a random intercept and random slope model with the interaction
+library(lme4)
+BPRS_ref2 <- lmer(bprs ~ week + treatment + (week | subject) + week * treatment, data = BPRS, REML = FALSE)
+
+# print a summary of the model
+summary(BPRS_ref2)
+
+# perform an ANOVA test on the two models
+anova(BPRS_ref2, BPRS_ref1)
+
+# draw the plot of BPRS with the observed Weight values
+library(ggplot2)
+ggplot(BPRS, aes(x = week, y = bprs, group = subject)) +
+  geom_line(aes(col = treatment, linetype = treatment)) +
+  scale_x_continuous(name = "Time (weeks)", breaks = seq(0, 8, 1)) +
+  scale_y_continuous(name = "Observed bprs") +
+  theme(legend.position = "top") + 
+  facet_grid(. ~ treatment, labeller = label_both)
+
+# Create a vector of the fitted values
+Fitted <- fitted(BPRS_ref2)
+
+library(dplyr)
+library(tidyr)
+# Create a new column fitted to BPRS
+BPRS <- BPRS %>%
+  mutate(Fitted = Fitted)
+
+# draw the plot of BPRS with the Fitted values of weight
+library(ggplot2)
+ggplot(BPRS, aes(x = week, y = Fitted, group = subject)) +
+  geom_line(aes(col = treatment, linetype = treatment)) +
+  scale_x_continuous(name = "Time (weeks)", breaks = seq(0, 8, 1)) +
+  scale_y_continuous(name = "Fitted bprs") +
+  theme(legend.position = "top") +
+  facet_grid(. ~ treatment, labeller = label_both)
+
+```
